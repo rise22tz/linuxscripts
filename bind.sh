@@ -15,12 +15,14 @@ if rndc status > /dev/null; then
 
 	if named-checkconf > /dev/null; then
 		
-		if ! named-checkzone $ZONE_NAME $ZONE_FILE > /dev/null; then
-			echo "zone file faulty"
+		if ! named-checkzone $ZONE_NAME $ZONE_FILE | grep -q "OK"; then
+			echo "Zone file faulty:"
+				named-checkzone $ZONE_NAME $ZONE_FILE
 			exit
 		fi
 
-	else echo "config file is faulty"
+	else echo "Config file is faulty:"
+		named-checkconf
 	exit
 
 	fi
@@ -29,7 +31,7 @@ if rndc status > /dev/null; then
 rndc reload
 
 else echo "Bind is not running, giving systemctl output:
---------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
 $(systemctl status named)"
 
 fi
